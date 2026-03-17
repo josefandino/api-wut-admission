@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "slim-scaffold": {
+      "command": "node",
+      "args": ["C:/ruta/al/slim-mcp/index.js"]
+    }
+  }
+}
