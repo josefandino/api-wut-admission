@@ -1,14 +1,14 @@
 <?php
 
+namespace App\Routes;
 
-use App\Admission\Routes\AdmissionRoutes;
-use App\Admin\Routes\AdminRoutes;
+use Slim\App;
+use App\Presentation\Routes\AdmissionRoutes;
 
-AdmissionRoutes::register($app, $jwtSecret);
-AdminRoutes::register($app, $jwtSecret);
-
-
-
-AdmissionRoutes::register($app, $jwtSecret);
-AdminRoutes::register($app, $jwtSecret);
-
+class Routes
+{
+    public static function register(App $app, string $jwtSecret): void
+    {
+        AdmissionRoutes::register($app, $jwtSecret);
+    }
+}
