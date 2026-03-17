@@ -21,16 +21,16 @@ class CreateAdmissionAction extends Action
     public static function rules(): array
     {
         return [
-            'name' => v::notEmpty()->length(1, 100),
-            'lastname' => v::notEmpty()->length(1, 100),
-            'type_document' => v::notEmpty()->length(1, 50),
-            'document' => v::notEmpty()->length(1, 25),
-            'phone' => v::optional(v::length(1, 20)),
-            'email' => v::notEmpty()->email()->length(1, 150),
-            'country' => v::optional(v::length(1, 100)),
-            'city' => v::optional(v::length(1, 100)),
-            'address' => v::optional(v::length(null, 500)),
-            'program' => v::optional(v::length(1, 150)),
+            'name' => v::stringType()->notBlank()->length(3, 100),
+            'lastname' => v::stringType()->notBlank()->length(3, 100),
+            'type_document' => v::stringType()->notBlank()->length(1, 50),
+            'document' => v::stringType()->notBlank()->length(5, 25),
+            'phone' => v::optional(v::stringType()->length(7, 20)),
+            'email' => v::stringType()->notBlank()->email()->length(5, 150),
+            'country' => v::optional(v::stringType()->length(2, 100)),
+            'city' => v::optional(v::stringType()->length(2, 100)),
+            'address' => v::optional(v::stringType()->length(5, 500)),
+            'program' => v::optional(v::stringType()->length(3, 150)),
         ];
     }
 
@@ -53,7 +53,7 @@ class CreateAdmissionAction extends Action
         }
 
         try {
-            $existing = $this->repository->findByDocument($formData['document']);
+            $existing = $this->repository->findByDocument(trim($formData['document']));
             if ($existing) {
                 return $this->respondWithError('El documento ya está registrado', 409);
             }
@@ -94,7 +94,8 @@ class CreateAdmissionAction extends Action
                 $value = $data[$field] ?? null;
                 $validator->assert($value);
             } catch (NestedValidationException $exception) {
-                $errors[$field] = $exception->getMessages();
+                $messages = $exception->getMessages();
+                $errors[$field] = is_array($messages) ? reset($messages) : $messages;
             }
         }
 
