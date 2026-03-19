@@ -27,13 +27,16 @@ class RateLimiter
         '/health',
         '/status',
         '/ping',
+        '/auth/login',
+        '/auth/register',
+        '/contacts',
+        '/admissions',
     ];
 
     // Endpoints con límites especiales (más restrictivos)
     const STRICT_ENDPOINTS = [
         '/contacts',
         '/admissions',
-        '/registration',
         '/login',
         '/register',
     ];

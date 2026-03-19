@@ -25,6 +25,9 @@ class ApiKeyMiddleware implements MiddlewareInterface
         '/health',
         '/status',
         '/ping',
+        '/auth/login',
+        '/contacts',
+        '/admissions',
     ];
 
     public function process(Request $request, RequestHandler $handler): Response

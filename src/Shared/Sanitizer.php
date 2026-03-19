@@ -21,10 +21,19 @@ class Sanitizer
 
         // Aplicar sanitización según el tipo
         return match ($type) {
+            'name' => self::sanitizeName($input),
+            'lastname' => self::sanitizeLastname($input),
             'email' => self::sanitizeEmail($input),
             'url' => self::sanitizeUrl($input),
             'number' => self::sanitizeNumber($input),
             'phone' => self::sanitizePhone($input),
+            'document' => self::sanitizeDocument($input),
+            'affair' => self::sanitizeAffair($input),
+            'address' => self::sanitizeAddress($input),
+            'city' => self::sanitizeCity($input),
+            'state' => self::sanitizeState($input),
+            'country' => self::sanitizeCountry($input),
+
             default => self::sanitizeString($input),
         };
     }

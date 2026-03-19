@@ -83,11 +83,6 @@ class CreateAdmissionAction extends Action
         }
 
         try {
-            $existing = $this->repository->findByDocument(trim($formData['document']));
-            if ($existing) {
-                return $this->respondWithError('El documento ya está registrado', 409);
-            }
-
             $admission = new Admission(
                 id: Uuid::uuid4()->toString(),
                 name: trim($formData['name']),

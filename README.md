@@ -53,7 +53,7 @@ mysql -u root < database.sql
 ```env
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=db_wut_admissions
+DB_NAME=name_db
 DB_USER=root
 DB_PASSWORD=
 

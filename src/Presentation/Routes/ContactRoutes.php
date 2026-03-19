@@ -11,7 +11,6 @@ class ContactRoutes
 {
     public static function register(App $app, string $jwtSecret): void
     {
-        var_dump($jwtSecret);
         // Rutas públicas de Contact
         $app->group('/contacts', function ($group) {
             $group->get('', \App\Application\Actions\Contact\ListContactAction::class);
