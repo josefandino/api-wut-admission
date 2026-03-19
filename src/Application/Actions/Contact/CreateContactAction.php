@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Application\Actions\Admission;
+namespace App\Application\Actions\Contact;
 
 use App\Application\Actions\Action;
-use App\Domain\Admission\Admission;
-use App\Infrastructure\Persistence\Admission\SqlAdmissionRepository;
+use App\Domain\Contact\Contact;
+use App\Infrastructure\Persistence\Contact\SqlContactRepository;
 use App\Shared\Sanitizer;
 use Ramsey\Uuid\Uuid;
 use Respect\Validation\Validator as v;
 use Respect\Validation\Exceptions\NestedValidationException;
 
-class CreateAdmissionAction extends Action
+class CreateContactAction extends Action
 {
-    private SqlAdmissionRepository $repository;
+    private SqlContactRepository $repository;
 
     public function __construct()
     {
-        $this->repository = new SqlAdmissionRepository();
+        $this->repository = new SqlContactRepository();
     }
 
     public static function rules(): array
@@ -24,20 +24,16 @@ class CreateAdmissionAction extends Action
         return [
             'name' => v::stringType()->notBlank()->length(3, 100),
             'lastname' => v::stringType()->notBlank()->length(3, 100),
-            'type_document' => v::stringType()->notBlank()->length(1, 50),
-            'document' => v::stringType()->notBlank()->length(5, 25),
+            'phone' => v::stringType()->notBlank()->length(7, 20),
             'email' => v::stringType()->notBlank()->email()->length(5, 150),
-            'phone' => v::optional(v::stringType()->notBlank()->length(7, 20)),
-            'country' => v::optional(v::stringType()->notBlank()->length(2, 100)),
-            'city' => v::optional(v::stringType()->notBlank()->length(2, 100)),
-            'address' => v::optional(v::stringType()->notBlank()->length(5, 500)),
-            'program' => v::optional(v::stringType()->notBlank()->length(3, 150)),
+            'affair' => v::stringType()->notBlank()->length(3, 100),
+            'message' => v::stringType()->notBlank()->length(5, 200),
         ];
     }
 
     public static function allowedFields(): array
     {
-        return ['name', 'lastname', 'type_document', 'document', 'email', 'phone', 'country', 'city', 'address', 'program'];
+        return ['name', 'lastname', 'email', 'phone', 'affair', 'message'];
     }
 
     protected function action(): \Psr\Http\Message\ResponseInterface
@@ -56,20 +52,15 @@ class CreateAdmissionAction extends Action
         $sanitizationRules = [
             'name' => 'string',
             'lastname' => 'string',
-            'type_document' => 'string',
-            'document' => 'string',
             'email' => 'email',
             'phone' => 'phone',
-            'country' => 'string',
-            'city' => 'string',
-            'address' => 'string',
-            'program' => 'string',
+            'affair' => 'string',
+            'message' => 'string',
         ];
         $formData = Sanitizer::sanitizeArray($formData, $sanitizationRules);
 
         // Validar que los datos sean seguros
-        $fieldsToCheck = ['name', 'lastname', 'type_document', 'document', 'email', 'phone', 'country', 'city', 'address', 'program'];
-        foreach ($fieldsToCheck as $field) {
+        foreach (['name', 'lastname', 'email', 'phone', 'affair', 'message'] as $field) {
             if (isset($formData[$field]) && !Sanitizer::isSafe($formData[$field])) {
                 error_log("Potential security threat detected in field '{$field}' - IP: " . $this->getClientIp());
                 return $this->respondWithError('Datos inválidos detectados', 400);
@@ -83,35 +74,26 @@ class CreateAdmissionAction extends Action
         }
 
         try {
-            $existing = $this->repository->findByDocument(trim($formData['document']));
-            if ($existing) {
-                return $this->respondWithError('El documento ya está registrado', 409);
-            }
-
-            $admission = new Admission(
+            $contact = new Contact(
                 id: Uuid::uuid4()->toString(),
                 name: trim($formData['name']),
                 lastname: trim($formData['lastname']),
-                typeDocument: trim($formData['type_document']),
-                document: trim($formData['document']),
-                phone: isset($formData['phone']) ? trim($formData['phone']) : null,
+                phone: trim($formData['phone']),
                 email: trim($formData['email']),
-                country: isset($formData['country']) ? trim($formData['country']) : null,
-                city: isset($formData['city']) ? trim($formData['city']) : null,
-                address: isset($formData['address']) ? trim($formData['address']) : null,
-                program: isset($formData['program']) ? trim($formData['program']) : null
+                affair: trim($formData['affair']),
+                message: trim($formData['message'])
             );
 
-            $this->repository->save($admission);
+            $this->repository->save($contact);
 
-            error_log("New admission created - ID: {$admission->id}, Document: {$admission->document}, IP: " . $this->getClientIp());
+            error_log("New contact created - ID: {$contact->id}, Email: {$contact->email}, IP: " . $this->getClientIp());
 
             return $this->respondWithData([
-                'id' => $admission->id,
-                'mensaje' => 'Admisión creada exitosamente'
+                'id' => $contact->id,
+                'mensaje' => 'Contacto creado exitosamente'
             ], 201);
         } catch (\Exception $e) {
-            return $this->respondWithError('Error al crear la admisión: ' . $e->getMessage(), 500);
+            return $this->respondWithError('Error al crear el contacto: ' . $e->getMessage(), 500);
         }
     }
 
