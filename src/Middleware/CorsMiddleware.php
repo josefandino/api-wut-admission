@@ -28,8 +28,8 @@ class CorsMiddleware implements MiddlewareInterface
             return $this->createPreflightResponse($origin);
         }
 
-        // Sin Origin o Origin no permitido -> bloquear
-        if (empty($origin) || !in_array($origin, self::ALLOWED_ORIGINS, true)) {
+        // Sin Origin (Postman/apps/backend) -> dejar pasar; Origin inválido -> bloquear
+        if (!empty($origin) && !in_array($origin, self::ALLOWED_ORIGINS, true)) {
             $response = new SlimResponse(403);
             $response->getBody()->write(json_encode([
                 'status' => false,

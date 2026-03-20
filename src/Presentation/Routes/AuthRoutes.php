@@ -122,8 +122,6 @@ class AuthRoutes
                         ->withStatus(401);
                 }
 
-        s
-                
                 // Registrar login exitoso
                 $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
                 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
