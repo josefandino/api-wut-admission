@@ -79,12 +79,7 @@ class CreateApiKeyAction extends Action
 
             error_log("API Key creada: {$apiKey} por ADMIN desde IP: " . $this->getClientIp());
 
-            return $this->respondWithData([
-                'api_key' => $apiKey,
-                'key_name' => trim($formData['key_name']),
-                'mensaje' => 'API Key creada exitosamente. Guarda la clave en un lugar seguro.',
-                'expires_at' => $expiresAt
-            ], 201);
+            return $this->respondWithCreated('API Key creada exitosamente');
         } catch (\Exception $e) {
             return $this->respondWithError('Error al crear API Key: ' . $e->getMessage(), 500);
         }

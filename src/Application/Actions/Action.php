@@ -75,29 +75,49 @@ abstract class Action
         return $info;
     }
 
-    protected function respondWithData(mixed $data = null, int $statusCode = 200): Response
+    protected function respondWithData(mixed $data = null, int $statusCode = 200, string $message = ''): Response
     {
+        $dataArray = is_array($data) ? $data : ($data !== null ? [$data] : []);
+
         $payload = [
-            'exito' => true,
-            'datos' => $data
+            'status' => true,
+            'message' => $message,
+            'data' => $dataArray,
+            'total' => is_array($data) ? count($data) : ($data !== null ? 1 : 0),
         ];
 
         $this->response->getBody()->write(json_encode($payload));
-        
+
         return $this->response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus($statusCode);
     }
 
+    protected function respondWithCreated(string $message = ''): Response
+    {
+        $payload = [
+            'status' => true,
+            'message' => $message,
+            'data' => [],
+            'total' => 1,
+        ];
+
+        $this->response->getBody()->write(json_encode($payload));
+
+        return $this->response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(201);
+    }
+
     protected function respondWithError(string $message, int $statusCode = 400, array $errors = null): Response
     {
         $payload = [
-            'exito' => false,
+            'status' => false,
             'error' => $message
         ];
 
         if ($errors !== null) {
-            $payload['errores'] = $errors;
+            $payload['errors'] = $errors;
         }
 
         $this->response->getBody()->write(json_encode($payload));

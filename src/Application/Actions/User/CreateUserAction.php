@@ -102,13 +102,7 @@ class CreateUserAction extends Action
 
             error_log("New user created - ID: {$user->getId()}, Username: {$user->getUsername()}, Role: {$user->getRole()}, IP: {$ipAddress}");
 
-            return $this->respondWithData([
-                'id' => $user->getId(),
-                'username' => $user->getUsername(),
-                'email' => $user->getEmail(),
-                'role' => $user->getRole(),
-                'created_at' => $user->getCreatedAt()
-            ], 201);
+            return $this->respondWithCreated('User created successfully');
         } catch (\Exception $e) {
             error_log("Error creating user: " . $e->getMessage());
             return $this->respondWithError('Error creating user', 500);

@@ -18,7 +18,7 @@ class ListBlockedIpsAction extends Action
             return $this->respondWithData([
                 'blocked_ips' => $blockedIps,
                 'statistics' => $stats
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return $this->respondWithError('Error al obtener IPs bloqueadas: ' . $e->getMessage(), 500);
         }

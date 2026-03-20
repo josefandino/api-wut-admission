@@ -16,6 +16,7 @@ class CorsMiddleware implements MiddlewareInterface
     private const ALLOWED_ORIGINS = [
         'https://worldtheologyuniversityedu.com',
         'https://www.worldtheologyuniversityedu.com',
+        'http://localhost:6300',
     ];
 
     public function process(Request $request, RequestHandler $handler): Response
@@ -31,7 +32,7 @@ class CorsMiddleware implements MiddlewareInterface
         if (empty($origin) || !in_array($origin, self::ALLOWED_ORIGINS, true)) {
             $response = new SlimResponse(403);
             $response->getBody()->write(json_encode([
-                'exito' => false,
+                'status' => false,
                 'error' => 'Origen no autorizado'
             ]));
             return $response->withHeader('Content-Type', 'application/json');

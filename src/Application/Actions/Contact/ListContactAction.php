@@ -22,9 +22,9 @@ class ListContactAction extends Action
         try {
             $contacts = $this->repository->findAll();
             
-            return $this->respondWithData([
-                'contacts' => array_map(fn($c) => $c->toArray(), $contacts)
-            ]);
+            return $this->respondWithData(
+                array_map(fn($c) => $c->toArray(), $contacts)
+            );
         } catch (\Exception $e) {
             return $this->respondWithError('Error al obtener los contactos: ' . $e->getMessage(), 500);
         }

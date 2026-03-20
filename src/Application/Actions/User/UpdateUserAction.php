@@ -98,14 +98,7 @@ class UpdateUserAction extends Action
 
             error_log("User updated - ID: {$userId}, IP: " . $this->getClientIp());
 
-            return $this->respondWithData([
-                'id' => $updatedUser->getId(),
-                'username' => $updatedUser->getUsername(),
-                'email' => $updatedUser->getEmail(),
-                'role' => $updatedUser->getRole(),
-                'is_active' => $updatedUser->isActive(),
-                'updated_at' => $updatedUser->getUpdatedAt()
-            ], 200);
+            return $this->respondWithData([], 200, 'User updated successfully');
         } catch (\Exception $e) {
             error_log("Error updating user: " . $e->getMessage());
             return $this->respondWithError('Error updating user', 500);

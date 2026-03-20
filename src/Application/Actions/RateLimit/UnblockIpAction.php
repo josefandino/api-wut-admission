@@ -43,11 +43,7 @@ class UnblockIpAction extends Action
             if ($success) {
                 error_log("IP desbloqueada: {$ip} por admin desde IP: " . $this->getClientIp());
                 
-                return $this->respondWithData([
-                    'mensaje' => 'IP desbloqueada exitosamente',
-                    'ip' => $ip,
-                    'endpoint' => $endpoint
-                ], 200);
+                return $this->respondWithData([], 200, 'IP desbloqueada exitosamente');
             } else {
                 return $this->respondWithError('Error al desbloquear la IP', 500);
             }

@@ -20,7 +20,7 @@ class FraudAnalyticsAction extends Action
                 'suspicious_logs' => $suspiciousLogs,
                 'statistics' => $statistics,
                 'incidents_by_country' => $incidentsByCountry
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return $this->respondWithError('Error al obtener análisis de fraude: ' . $e->getMessage(), 500);
         }

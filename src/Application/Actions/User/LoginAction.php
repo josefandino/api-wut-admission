@@ -68,7 +68,7 @@ class LoginAction extends Action
                 error_log("Failed login attempt - Account blocked: {$username}, IP: " . $this->getClientIp());
                 
                 $this->response->getBody()->write(json_encode([
-                    'exito' => false,
+                    'status' => false,
                     'error' => 'LOGIN_ACTION_BLOCK_TEST_UNIQUE_MESSAGE_12345',
                     'unblock_at' => $blockUntil->format('Y-m-d H:i:s')
                 ]));
@@ -127,6 +127,6 @@ class LoginAction extends Action
                 'email' => $user->getEmail(),
                 'role' => $user->getRole()
             ]
-        ], 200);
+        ], 200, 'Login exitoso');
     }
 }

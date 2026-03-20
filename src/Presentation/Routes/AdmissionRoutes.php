@@ -25,16 +25,16 @@ class AdmissionRoutes
         $app->group('/registration', function ($group) {
             $group->get('', function ($request, $response) {
                 $response->getBody()->write(json_encode([
-                    'exito' => true,
-                    'mensaje' => 'Registration endpoint'
+                    'status' => true,
+                    'message' => 'Registration endpoint'
                 ]));
                 return $response->withHeader('Content-Type', 'application/json');
             });
             
             $group->post('', function ($request, $response) {
                 $response->getBody()->write(json_encode([
-                    'exito' => true,
-                    'mensaje' => 'Registration created'
+                    'status' => true,
+                    'message' => 'Registration created'
                 ]));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
             });

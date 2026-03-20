@@ -62,7 +62,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         $response = new SlimResponse($statusCode);
         
         $payload = [
-            'exito' => false,
+            'status' => false,
             'error' => $message,
             'code' => 'RATE_LIMIT_EXCEEDED',
             'retry_after' => $retryAfter,

@@ -30,9 +30,7 @@ class ListApiKeysAction extends Action
             
             $keys = $stmt->fetchAll();
 
-            return $this->respondWithData([
-                'api_keys' => $keys
-            ]);
+            return $this->respondWithData($keys);
         } catch (\Exception $e) {
             return $this->respondWithError('Error al obtener API Keys: ' . $e->getMessage(), 500);
         }
