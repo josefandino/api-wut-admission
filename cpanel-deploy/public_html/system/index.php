@@ -27,6 +27,9 @@ $app = AppFactory::create();
 
 $app->add(new ApiKeyMiddleware());
 
+// Error middleware - muestra detalles en logs (no en respuesta en producción)
+// $errorMiddleware = $app->addErrorMiddleware(false, true, true);
+
 Routes::register($app, $jwtSecret);
 
 $app->run();
