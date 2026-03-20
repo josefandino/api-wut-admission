@@ -1,0 +1,9 @@
+// vendor
+vendor/
+
+
+// ENV
+.env
+
+// MCP
+slim-mcp/
