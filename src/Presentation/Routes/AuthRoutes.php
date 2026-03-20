@@ -20,7 +20,7 @@ class AuthRoutes
             // Validar datos de entrada
             if (empty($data['username']) || empty($data['password'])) {
                 $response->getBody()->write(json_encode([
-                    'exito' => false,
+                    'status' => false,
                     'error' => 'Username and password are required.'
                 ]));
                 return $response
@@ -39,7 +39,7 @@ class AuthRoutes
                 
                 if (!$row) {
                     $response->getBody()->write(json_encode([
-                        'exito' => false,
+                        'status' => false,
                         'error' => 'Invalid credentials.'
                     ]));
                     return $response
@@ -72,7 +72,7 @@ class AuthRoutes
                 // Verificar si usuario está activo
                 if (!$user->isActive()) {
                     $response->getBody()->write(json_encode([
-                        'exito' => false,
+                        'status' => false,
                         'error' => 'Invalid credentials.'
                     ]));
                     return $response
@@ -87,7 +87,7 @@ class AuthRoutes
                     
                     if ($now < $blockUntil) {
                         $response->getBody()->write(json_encode([
-                            'exito' => false,
+                            'status' => false,
                             'error' => 'Account is temporarily blocked due to multiple failed login attempts.',
                             'unblock_at' => $blockUntil->format('Y-m-d H:i:s')
                         ]));
@@ -114,13 +114,15 @@ class AuthRoutes
                     }
                     
                     $response->getBody()->write(json_encode([
-                        'exito' => false,
+                        'status' => false,
                         'error' => 'Invalid credentials.'
                     ]));
                     return $response
                         ->withHeader('Content-Type', 'application/json')
                         ->withStatus(401);
                 }
+
+        s
                 
                 // Registrar login exitoso
                 $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -143,8 +145,8 @@ class AuthRoutes
                 
                 // Respuesta exitosa
                 $response->getBody()->write(json_encode([
-                    'exito' => true,
-                    'datos' => [
+                    'status' => true,
+                    'data' => [
                         'token' => $token,
                         'user' => [
                             'id' => $user->getId(),
@@ -163,7 +165,7 @@ class AuthRoutes
                 error_log("Login error: " . $e->getMessage());
                 
                 $response->getBody()->write(json_encode([
-                    'exito' => false,
+                    'status' => false,
                     'error' => 'Authentication error'
                 ]));
                 return $response

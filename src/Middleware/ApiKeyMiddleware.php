@@ -151,7 +151,7 @@ class ApiKeyMiddleware implements MiddlewareInterface
     {
         $response = new SlimResponse(503);
         $response->getBody()->write(json_encode([
-            'exito' => false,
+            'status' => false,
             'error' => self::ERROR_MESSAGE
         ]));
         return $response->withHeader('Content-Type', 'application/json');

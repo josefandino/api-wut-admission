@@ -134,7 +134,7 @@ class RequestValidationMiddleware implements MiddlewareInterface
     {
         $response = new SlimResponse($statusCode);
         $response->getBody()->write(json_encode([
-            'exito' => false,
+            'status' => false,
             'error' => $message
         ]));
         return $response->withHeader('Content-Type', 'application/json');

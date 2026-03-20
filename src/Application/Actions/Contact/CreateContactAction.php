@@ -88,10 +88,7 @@ class CreateContactAction extends Action
 
             error_log("New contact created - ID: {$contact->id}, Email: {$contact->email}, IP: " . $this->getClientIp());
 
-            return $this->respondWithData([
-                'id' => $contact->id,
-                'mensaje' => 'Contacto creado exitosamente'
-            ], 201);
+            return $this->respondWithCreated('Contacto creado exitosamente');
         } catch (\Exception $e) {
             return $this->respondWithError('Error al crear el contacto: ' . $e->getMessage(), 500);
         }

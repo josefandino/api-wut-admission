@@ -297,7 +297,284 @@ curl -X POST http://localhost:8000/contacts \
 | **MIME Sniffing** | X-Content-Type-Options | ✅ |
 | **Fraude** | IP Intelligence | ✅ |
 
+---
 
+## 📁 Estructura del Proyecto
+
+```
+api-wut-admission/
+├── app/                          # Configuración
+│   ├── middleware.php            # Middlewares
+│   ├── routes.php                # Rutas
+│   ├── settings.php              # Configuración
+│   └── dependencies.php          # Inyección
+│
+├── src/
+│   ├── Application/Actions/      # Acciones/Controladores
+│   │   ├── Contact/              # Acciones de contacto
+│   │   ├── Admission/            # Acciones de admisión
+│   │   ├── ApiKey/               # Gestión de API Keys
+│   │   ├── RateLimit/            # Gestión de rate limit
+│   │   └── Fraud/                # Analytics de fraude
+│   │
+│   ├── Domain/                   # Entidades
+│   │   ├── Contact/
+│   │   └── Admission/
+│   │
+│   ├── Infrastructure/           # Persistencia
+│   │   └── Persistence/
+│   │       ├── Contact/
+│   │       └── Admission/
+│   │
+│   ├── Middleware/               # Middlewares personalizados
+│   │   ├── ApiKeyMiddleware.php
+│   │   ├── RateLimitMiddleware.php
+│   │   ├── RequestValidationMiddleware.php
+│   │   └── SecurityHeadersMiddleware.php
+│   │
+│   ├── Shared/                   # Utilidades compartidas
+│   │   ├── Database.php
+│   │   ├── Sanitizer.php
+│   │   ├── RateLimiter.php
+│   │   └── IpIntelligence.php
+│   │
+│   ├── Presentation/Routes/      # Definición de rutas
+│   │   ├── ContactRoutes.php
+│   │   ├── AdmissionRoutes.php
+│   │   ├── ApiKeyRoutes.php
+│   │   └── RateLimitRoutes.php
+│   │
+│   └── Routes/Routes.php         # Registro de rutas
+│
+├── public/
+│   ├── index.php                 # Punto de entrada
+│   └── .htaccess
+│
+├── database.sql                  # Schema de BD
+├── .env.example                  # Variables de entorno
+├── .gitignore
+├── composer.json
+├── SECURITY.md                   # Documentación de seguridad
+├── STRUCTURE.md                  # Estructura del proyecto
+└── README.md                     # Este archivo
+```
+
+---
+
+## 📊 Tablas de Base de Datos
+
+### contact (Contactos)
+
+```sql
+CREATE TABLE contact (
+    id CHAR(36) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    affair VARCHAR(100) NOT NULL,
+    message VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### admission (Admisiones)
+
+```sql
+CREATE TABLE admission (
+    id CHAR(36) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    type_document VARCHAR(50) NOT NULL,
+    document VARCHAR(25) NOT NULL UNIQUE,
+    phone VARCHAR(20),
+    email VARCHAR(150) NOT NULL,
+    country VARCHAR(100),
+    city VARCHAR(100),
+    address TEXT,
+    program VARCHAR(150),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### rate_limiting (Control de Rate Limit)
+
+```sql
+CREATE TABLE rate_limiting (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ip_address VARCHAR(45) NOT NULL UNIQUE,
+    endpoint VARCHAR(255),
+    request_count INT,
+    blocked_until TIMESTAMP,
+    is_blocked BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### ip_logs (Detección de Fraude)
+
+```sql
+CREATE TABLE ip_logs (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ip_address VARCHAR(45),
+    endpoint VARCHAR(255),
+    method VARCHAR(10),
+    country_code VARCHAR(5),
+    country_name VARCHAR(100),
+    isp_provider VARCHAR(255),
+    is_vpn BOOLEAN,
+    is_proxy BOOLEAN,
+    is_bot BOOLEAN,
+    fraud_score INT,
+    is_suspicious BOOLEAN,
+    threat_type VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### api_keys (API Keys Management)
+
+```sql
+CREATE TABLE api_keys (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    api_key VARCHAR(255) NOT NULL UNIQUE,
+    key_name VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    is_admin BOOLEAN DEFAULT FALSE,
+    rate_limit INT DEFAULT 100,
+    allowed_endpoints TEXT,
+    allowed_methods VARCHAR(100),
+    allowed_ips TEXT,
+    blocked_ips TEXT,
+    expires_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Crear contacto con curl
+curl -X POST http://localhost:8000/contacts \
+  -H "X-API-Key: sk_test123..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test",
+    "lastname": "User",
+    "phone": "1234567890",
+    "email": "test@example.com",
+    "affair": "Testing",
+    "message": "This is a test message"
+  }'
+
+# Ver todos los contactos
+curl -X GET http://localhost:8000/contacts \
+  -H "X-API-Key: sk_test123..."
+
+# Ver contacto específico
+curl -X GET http://localhost:8000/contacts/123e4567-e89b-12d3-a456-426614174000 \
+  -H "X-API-Key: sk_test123..."
+```
+
+---
+
+## 🔧 Configuración Avanzada
+
+### Cambiar Límite de Rate Limiting
+
+**Archivo:** `src/Shared/RateLimiter.php`
+
+```php
+const MAX_REQUESTS_PER_MINUTE = 3;      // Cambiar aquí
+const BLOCK_DURATION_HOURS = 24;        // O aquí
+```
+
+### Modificar Endpoints Excluidos
+
+**Archivo:** `src/Middleware/ApiKeyMiddleware.php`
+
+```php
+const PUBLIC_ENDPOINTS = [
+    '/',
+    '/health',
+    '/status',
+    '/ping',
+];
+```
+
+### Configurar Endpoints Estrictos
+
+**Archivo:** `src/Shared/RateLimiter.php`
+
+```php
+const STRICT_ENDPOINTS = [
+    '/contacts',        // Máx 2 peticiones
+    '/admissions',
+    '/registration',
+];
+```
+
+---
+
+## 📝 Validaciones de Campos
+
+### Contact
+
+| Campo | Tipo | Requerido | Validación |
+|-------|------|-----------|-----------|
+| name | String | ✅ | 3-100 caracteres |
+| lastname | String | ✅ | 3-100 caracteres |
+| phone | String | ✅ | 7-20 caracteres |
+| email | String | ✅ | Email válido |
+| affair | String | ✅ | 3-100 caracteres |
+| message | String | ✅ | 5-200 caracteres |
+
+### Admission
+
+| Campo | Tipo | Requerido | Validación |
+|-------|------|-----------|-----------|
+| name | String | ✅ | 3-100 caracteres |
+| lastname | String | ✅ | 3-100 caracteres |
+| type_document | String | ✅ | 1-50 caracteres |
+| document | String | ✅ | 5-25 caracteres, UNIQUE |
+| phone | String | ❌ | 7-20 caracteres |
+| email | String | ✅ | Email válido |
+| country | String | ❌ | 2-100 caracteres |
+| city | String | ❌ | 2-100 caracteres |
+| address | String | ❌ | 5-500 caracteres |
+| program | String | ❌ | 3-150 caracteres |
+
+---
+
+## 🐛 Debugging
+
+### Ver Logs
+
+```bash
+# Logs de error (Apache)
+tail -f /var/log/apache2/error.log
+
+# Logs de aplicación
+tail -f storage/logs/app.log
+```
+
+### Modo Debug
+
+En `.env`:
+```env
+APP_DEBUG=true
+```
+
+### Ver Headers de Respuesta
+
+```bash
+curl -i -X GET http://localhost:8000/contacts \
+  -H "X-API-Key: sk_..."
+```
+
+---
 
 ## 📚 Recursos Adicionales
 

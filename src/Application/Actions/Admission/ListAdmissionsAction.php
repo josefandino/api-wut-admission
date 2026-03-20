@@ -22,9 +22,9 @@ class ListAdmissionsAction extends Action
         try {
             $admissions = $this->repository->findAll();
             
-            return $this->respondWithData([
-                'admissions' => array_map(fn($a) => $a->toArray(), $admissions)
-            ]);
+            return $this->respondWithData(
+                array_map(fn($a) => $a->toArray(), $admissions)
+            );
         } catch (\Exception $e) {
             return $this->respondWithError('Error al obtener las admisiones: ' . $e->getMessage(), 500);
         }

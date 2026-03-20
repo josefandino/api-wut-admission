@@ -35,10 +35,7 @@ class DeleteUserAction extends Action
 
             error_log("User deleted (soft delete) - ID: {$userId}, IP: " . $this->getClientIp());
 
-            return $this->respondWithData([
-                'message' => 'User deleted successfully',
-                'id' => $userId
-            ], 200);
+            return $this->respondWithData([], 200, 'User deleted successfully');
         } catch (\Exception $e) {
             error_log("Error deleting user: " . $e->getMessage());
             return $this->respondWithError('Error deleting user', 500);

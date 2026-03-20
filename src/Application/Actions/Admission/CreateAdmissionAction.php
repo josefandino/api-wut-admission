@@ -101,10 +101,7 @@ class CreateAdmissionAction extends Action
 
             error_log("New admission created - ID: {$admission->id}, Document: {$admission->document}, IP: " . $this->getClientIp());
 
-            return $this->respondWithData([
-                'id' => $admission->id,
-                'mensaje' => 'Admisión creada exitosamente'
-            ], 201);
+            return $this->respondWithCreated('Admisión creada exitosamente');
         } catch (\Exception $e) {
             return $this->respondWithError('Error al crear la admisión: ' . $e->getMessage(), 500);
         }
